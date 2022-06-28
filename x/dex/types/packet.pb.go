@@ -25,6 +25,7 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 type DexPacketData struct {
 	// Types that are valid to be assigned to Packet:
 	//	*DexPacketData_NoData
+	//	*DexPacketData_SellOrderPacket
 	//	*DexPacketData_CreatePairPacket
 	Packet isDexPacketData_Packet `protobuf_oneof:"packet"`
 }
@@ -71,11 +72,15 @@ type isDexPacketData_Packet interface {
 type DexPacketData_NoData struct {
 	NoData *NoData `protobuf:"bytes,1,opt,name=noData,proto3,oneof" json:"noData,omitempty"`
 }
+type DexPacketData_SellOrderPacket struct {
+	SellOrderPacket *SellOrderPacketData `protobuf:"bytes,3,opt,name=sellOrderPacket,proto3,oneof" json:"sellOrderPacket,omitempty"`
+}
 type DexPacketData_CreatePairPacket struct {
 	CreatePairPacket *CreatePairPacketData `protobuf:"bytes,2,opt,name=createPairPacket,proto3,oneof" json:"createPairPacket,omitempty"`
 }
 
 func (*DexPacketData_NoData) isDexPacketData_Packet()           {}
+func (*DexPacketData_SellOrderPacket) isDexPacketData_Packet()  {}
 func (*DexPacketData_CreatePairPacket) isDexPacketData_Packet() {}
 
 func (m *DexPacketData) GetPacket() isDexPacketData_Packet {
@@ -92,6 +97,13 @@ func (m *DexPacketData) GetNoData() *NoData {
 	return nil
 }
 
+func (m *DexPacketData) GetSellOrderPacket() *SellOrderPacketData {
+	if x, ok := m.GetPacket().(*DexPacketData_SellOrderPacket); ok {
+		return x.SellOrderPacket
+	}
+	return nil
+}
+
 func (m *DexPacketData) GetCreatePairPacket() *CreatePairPacketData {
 	if x, ok := m.GetPacket().(*DexPacketData_CreatePairPacket); ok {
 		return x.CreatePairPacket
@@ -103,6 +115,7 @@ func (m *DexPacketData) GetCreatePairPacket() *CreatePairPacketData {
 func (*DexPacketData) XXX_OneofWrappers() []interface{} {
 	return []interface{}{
 		(*DexPacketData_NoData)(nil),
+		(*DexPacketData_SellOrderPacket)(nil),
 		(*DexPacketData_CreatePairPacket)(nil),
 	}
 }
@@ -233,35 +246,165 @@ func (m *CreatePairPacketAck) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_CreatePairPacketAck proto.InternalMessageInfo
 
+// SellOrderPacketData defines a struct for the packet payload
+type SellOrderPacketData struct {
+	AmountDenom string `protobuf:"bytes,1,opt,name=amountDenom,proto3" json:"amountDenom,omitempty"`
+	Amount      int32  `protobuf:"varint,2,opt,name=amount,proto3" json:"amount,omitempty"`
+	PriceDenom  string `protobuf:"bytes,3,opt,name=priceDenom,proto3" json:"priceDenom,omitempty"`
+	Price       int32  `protobuf:"varint,4,opt,name=price,proto3" json:"price,omitempty"`
+}
+
+func (m *SellOrderPacketData) Reset()         { *m = SellOrderPacketData{} }
+func (m *SellOrderPacketData) String() string { return proto.CompactTextString(m) }
+func (*SellOrderPacketData) ProtoMessage()    {}
+func (*SellOrderPacketData) Descriptor() ([]byte, []int) {
+	return fileDescriptor_9e40d3eecbdb512f, []int{4}
+}
+func (m *SellOrderPacketData) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *SellOrderPacketData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_SellOrderPacketData.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *SellOrderPacketData) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SellOrderPacketData.Merge(m, src)
+}
+func (m *SellOrderPacketData) XXX_Size() int {
+	return m.Size()
+}
+func (m *SellOrderPacketData) XXX_DiscardUnknown() {
+	xxx_messageInfo_SellOrderPacketData.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SellOrderPacketData proto.InternalMessageInfo
+
+func (m *SellOrderPacketData) GetAmountDenom() string {
+	if m != nil {
+		return m.AmountDenom
+	}
+	return ""
+}
+
+func (m *SellOrderPacketData) GetAmount() int32 {
+	if m != nil {
+		return m.Amount
+	}
+	return 0
+}
+
+func (m *SellOrderPacketData) GetPriceDenom() string {
+	if m != nil {
+		return m.PriceDenom
+	}
+	return ""
+}
+
+func (m *SellOrderPacketData) GetPrice() int32 {
+	if m != nil {
+		return m.Price
+	}
+	return 0
+}
+
+// SellOrderPacketAck defines a struct for the packet acknowledgment
+type SellOrderPacketAck struct {
+	RemainingAmount int32 `protobuf:"varint,1,opt,name=remainingAmount,proto3" json:"remainingAmount,omitempty"`
+	Gain            int32 `protobuf:"varint,2,opt,name=gain,proto3" json:"gain,omitempty"`
+}
+
+func (m *SellOrderPacketAck) Reset()         { *m = SellOrderPacketAck{} }
+func (m *SellOrderPacketAck) String() string { return proto.CompactTextString(m) }
+func (*SellOrderPacketAck) ProtoMessage()    {}
+func (*SellOrderPacketAck) Descriptor() ([]byte, []int) {
+	return fileDescriptor_9e40d3eecbdb512f, []int{5}
+}
+func (m *SellOrderPacketAck) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *SellOrderPacketAck) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_SellOrderPacketAck.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *SellOrderPacketAck) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SellOrderPacketAck.Merge(m, src)
+}
+func (m *SellOrderPacketAck) XXX_Size() int {
+	return m.Size()
+}
+func (m *SellOrderPacketAck) XXX_DiscardUnknown() {
+	xxx_messageInfo_SellOrderPacketAck.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SellOrderPacketAck proto.InternalMessageInfo
+
+func (m *SellOrderPacketAck) GetRemainingAmount() int32 {
+	if m != nil {
+		return m.RemainingAmount
+	}
+	return 0
+}
+
+func (m *SellOrderPacketAck) GetGain() int32 {
+	if m != nil {
+		return m.Gain
+	}
+	return 0
+}
+
 func init() {
 	proto.RegisterType((*DexPacketData)(nil), "username.interchange.dex.DexPacketData")
 	proto.RegisterType((*NoData)(nil), "username.interchange.dex.NoData")
 	proto.RegisterType((*CreatePairPacketData)(nil), "username.interchange.dex.CreatePairPacketData")
 	proto.RegisterType((*CreatePairPacketAck)(nil), "username.interchange.dex.CreatePairPacketAck")
+	proto.RegisterType((*SellOrderPacketData)(nil), "username.interchange.dex.SellOrderPacketData")
+	proto.RegisterType((*SellOrderPacketAck)(nil), "username.interchange.dex.SellOrderPacketAck")
 }
 
 func init() { proto.RegisterFile("dex/packet.proto", fileDescriptor_9e40d3eecbdb512f) }
 
 var fileDescriptor_9e40d3eecbdb512f = []byte{
-	// 276 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x91, 0x31, 0x4b, 0xc3, 0x40,
-	0x18, 0x86, 0x73, 0x1d, 0x42, 0xbd, 0x22, 0x94, 0xa8, 0x90, 0xe9, 0x08, 0x99, 0x9c, 0xee, 0x40,
-	0x71, 0x71, 0xb3, 0x66, 0x70, 0xd2, 0xd2, 0xb1, 0xb8, 0x5c, 0xaf, 0x1f, 0x69, 0xa8, 0xb9, 0x0b,
-	0x97, 0x2f, 0x10, 0xff, 0x85, 0xff, 0xc5, 0x3f, 0xe1, 0xd8, 0xd1, 0x51, 0x92, 0x3f, 0x22, 0xc9,
-	0x55, 0x08, 0xb5, 0xdd, 0x8e, 0x8f, 0xe7, 0x7d, 0x8e, 0x97, 0x97, 0x4e, 0xd7, 0x50, 0x8b, 0x42,
-	0xaa, 0x2d, 0x20, 0x2f, 0xac, 0x41, 0x13, 0x84, 0x55, 0x09, 0x56, 0xcb, 0x1c, 0x78, 0xa6, 0x11,
-	0xac, 0xda, 0x48, 0x9d, 0x02, 0x5f, 0x43, 0x1d, 0x7f, 0x12, 0x7a, 0x9e, 0x40, 0x3d, 0xef, 0xe9,
-	0x44, 0xa2, 0x0c, 0xee, 0xa9, 0xaf, 0x4d, 0xf7, 0x0a, 0x49, 0x44, 0xae, 0x27, 0x37, 0x11, 0x3f,
-	0x15, 0xe6, 0xcf, 0x3d, 0xf7, 0xe4, 0x2d, 0xf6, 0x89, 0xe0, 0x95, 0x4e, 0x95, 0x05, 0x89, 0x30,
-	0x97, 0x99, 0x75, 0xce, 0x70, 0xd4, 0x5b, 0xf8, 0x69, 0xcb, 0xe3, 0x41, 0x62, 0xef, 0xfc, 0x67,
-	0x9a, 0x8d, 0xa9, 0xef, 0x5a, 0xc5, 0x63, 0xea, 0xbb, 0xbf, 0xe3, 0x25, 0xbd, 0x3c, 0x96, 0x0f,
-	0x22, 0x3a, 0x29, 0x4d, 0x65, 0x15, 0x24, 0xa0, 0x4d, 0xde, 0x57, 0x39, 0x5b, 0x0c, 0x4f, 0x1d,
-	0x81, 0xd2, 0xa6, 0x80, 0x8e, 0x18, 0x39, 0x62, 0x70, 0x8a, 0xaf, 0xe8, 0xc5, 0xa1, 0xfb, 0x41,
-	0x6d, 0x67, 0x2f, 0x5f, 0x0d, 0x23, 0xbb, 0x86, 0x91, 0x9f, 0x86, 0x91, 0x8f, 0x96, 0x79, 0xbb,
-	0x96, 0x79, 0xdf, 0x2d, 0xf3, 0x96, 0x77, 0x69, 0x86, 0x9b, 0x6a, 0xc5, 0x95, 0xc9, 0x45, 0x66,
-	0xd5, 0x9b, 0xac, 0x4a, 0xd0, 0xe2, 0xaf, 0xb8, 0x18, 0x14, 0x17, 0xb5, 0xe8, 0x46, 0xc2, 0xf7,
-	0x02, 0xca, 0x95, 0xdf, 0x8f, 0x74, 0xfb, 0x1b, 0x00, 0x00, 0xff, 0xff, 0xa3, 0x94, 0x72, 0x91,
-	0xb8, 0x01, 0x00, 0x00,
+	// 384 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x92, 0xbf, 0x0e, 0xda, 0x30,
+	0x10, 0xc6, 0x13, 0xfe, 0x44, 0xf4, 0x50, 0x05, 0x32, 0xb4, 0xca, 0x14, 0xa1, 0x4c, 0x2c, 0x4d,
+	0xa4, 0x56, 0x5d, 0xba, 0x41, 0x19, 0x3a, 0x15, 0x94, 0x4e, 0x45, 0x5d, 0x8c, 0x39, 0x05, 0x0b,
+	0xe2, 0x44, 0x8e, 0x23, 0xa5, 0x0f, 0xd0, 0xb5, 0xea, 0x63, 0x75, 0x64, 0xec, 0x58, 0xc1, 0x8b,
+	0x54, 0xb1, 0x83, 0x14, 0x52, 0xd8, 0x7c, 0x9f, 0xbe, 0xef, 0x77, 0xe7, 0xb3, 0x61, 0xbc, 0xc7,
+	0x32, 0xcc, 0x28, 0x3b, 0xa2, 0x0a, 0x32, 0x99, 0xaa, 0x94, 0xb8, 0x45, 0x8e, 0x52, 0xd0, 0x04,
+	0x03, 0x2e, 0x14, 0x4a, 0x76, 0xa0, 0x22, 0xc6, 0x60, 0x8f, 0xa5, 0xff, 0xb3, 0x03, 0x2f, 0x57,
+	0x58, 0x6e, 0xb4, 0x7b, 0x45, 0x15, 0x25, 0x1f, 0xc0, 0x11, 0x69, 0x75, 0x72, 0xed, 0x99, 0x3d,
+	0x1f, 0xbe, 0x9d, 0x05, 0xcf, 0xc2, 0xc1, 0x67, 0xed, 0xfb, 0x64, 0x45, 0x75, 0x82, 0x7c, 0x85,
+	0x51, 0x8e, 0xa7, 0xd3, 0x5a, 0xee, 0x51, 0x1a, 0xa4, 0xdb, 0xd5, 0x90, 0x37, 0xcf, 0x21, 0x5f,
+	0xee, 0x03, 0x35, 0xb1, 0xcd, 0x21, 0xdf, 0x60, 0xcc, 0x24, 0x52, 0x85, 0x1b, 0xca, 0x6f, 0xec,
+	0x8e, 0x66, 0x07, 0xcf, 0xd9, 0x1f, 0x5b, 0x89, 0x1a, 0xfe, 0x1f, 0x69, 0x39, 0x00, 0xc7, 0x2c,
+	0xcc, 0x1f, 0x80, 0x63, 0xae, 0xe5, 0x6f, 0x61, 0xfa, 0x28, 0x4f, 0x66, 0x30, 0xcc, 0xd3, 0x42,
+	0x32, 0x5c, 0xa1, 0x48, 0x13, 0xbd, 0xa5, 0x17, 0x51, 0x53, 0xaa, 0x1c, 0x8a, 0xca, 0x18, 0x95,
+	0x71, 0x74, 0x8c, 0xa3, 0x21, 0xf9, 0xaf, 0x60, 0xd2, 0x66, 0x2f, 0xd8, 0xd1, 0xff, 0x61, 0xc3,
+	0xe4, 0xc1, 0x3e, 0x2a, 0x20, 0x4d, 0xd2, 0x42, 0xa8, 0xbb, 0x96, 0x0d, 0x89, 0xbc, 0x06, 0xc7,
+	0x94, 0xba, 0x5b, 0x3f, 0xaa, 0x2b, 0xe2, 0x01, 0x64, 0x92, 0xdf, 0x66, 0xed, 0xea, 0x60, 0x43,
+	0x21, 0x53, 0xe8, 0xeb, 0xca, 0xed, 0xe9, 0x98, 0x29, 0xfc, 0x08, 0x48, 0x6b, 0x8c, 0x05, 0x3b,
+	0x92, 0x39, 0x8c, 0x24, 0x26, 0x94, 0x0b, 0x2e, 0xe2, 0x85, 0x69, 0x66, 0xeb, 0x54, 0x5b, 0x26,
+	0x04, 0x7a, 0x31, 0xe5, 0xa2, 0x9e, 0x45, 0x9f, 0x97, 0xeb, 0xdf, 0x17, 0xcf, 0x3e, 0x5f, 0x3c,
+	0xfb, 0xef, 0xc5, 0xb3, 0x7f, 0x5d, 0x3d, 0xeb, 0x7c, 0xf5, 0xac, 0x3f, 0x57, 0xcf, 0xda, 0xbe,
+	0x8f, 0xb9, 0x3a, 0x14, 0xbb, 0x80, 0xa5, 0x49, 0xc8, 0x25, 0x3b, 0xd1, 0x22, 0x47, 0x11, 0xde,
+	0x1e, 0x35, 0x6c, 0x3c, 0x6a, 0x58, 0x86, 0xd5, 0xdf, 0x56, 0xdf, 0x33, 0xcc, 0x77, 0x8e, 0xfe,
+	0xdb, 0xef, 0xfe, 0x05, 0x00, 0x00, 0xff, 0xff, 0xcb, 0xcd, 0x2b, 0x02, 0xef, 0x02, 0x00, 0x00,
 }
 
 func (m *DexPacketData) Marshal() (dAtA []byte, err error) {
@@ -335,6 +478,27 @@ func (m *DexPacketData_CreatePairPacket) MarshalToSizedBuffer(dAtA []byte) (int,
 		}
 		i--
 		dAtA[i] = 0x12
+	}
+	return len(dAtA) - i, nil
+}
+func (m *DexPacketData_SellOrderPacket) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *DexPacketData_SellOrderPacket) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.SellOrderPacket != nil {
+		{
+			size, err := m.SellOrderPacket.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintPacket(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x1a
 	}
 	return len(dAtA) - i, nil
 }
@@ -421,6 +585,86 @@ func (m *CreatePairPacketAck) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *SellOrderPacketData) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *SellOrderPacketData) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *SellOrderPacketData) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Price != 0 {
+		i = encodeVarintPacket(dAtA, i, uint64(m.Price))
+		i--
+		dAtA[i] = 0x20
+	}
+	if len(m.PriceDenom) > 0 {
+		i -= len(m.PriceDenom)
+		copy(dAtA[i:], m.PriceDenom)
+		i = encodeVarintPacket(dAtA, i, uint64(len(m.PriceDenom)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.Amount != 0 {
+		i = encodeVarintPacket(dAtA, i, uint64(m.Amount))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.AmountDenom) > 0 {
+		i -= len(m.AmountDenom)
+		copy(dAtA[i:], m.AmountDenom)
+		i = encodeVarintPacket(dAtA, i, uint64(len(m.AmountDenom)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *SellOrderPacketAck) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *SellOrderPacketAck) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *SellOrderPacketAck) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Gain != 0 {
+		i = encodeVarintPacket(dAtA, i, uint64(m.Gain))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.RemainingAmount != 0 {
+		i = encodeVarintPacket(dAtA, i, uint64(m.RemainingAmount))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintPacket(dAtA []byte, offset int, v uint64) int {
 	offset -= sovPacket(v)
 	base := offset
@@ -468,6 +712,18 @@ func (m *DexPacketData_CreatePairPacket) Size() (n int) {
 	}
 	return n
 }
+func (m *DexPacketData_SellOrderPacket) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.SellOrderPacket != nil {
+		l = m.SellOrderPacket.Size()
+		n += 1 + l + sovPacket(uint64(l))
+	}
+	return n
+}
 func (m *NoData) Size() (n int) {
 	if m == nil {
 		return 0
@@ -500,6 +756,44 @@ func (m *CreatePairPacketAck) Size() (n int) {
 	}
 	var l int
 	_ = l
+	return n
+}
+
+func (m *SellOrderPacketData) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.AmountDenom)
+	if l > 0 {
+		n += 1 + l + sovPacket(uint64(l))
+	}
+	if m.Amount != 0 {
+		n += 1 + sovPacket(uint64(m.Amount))
+	}
+	l = len(m.PriceDenom)
+	if l > 0 {
+		n += 1 + l + sovPacket(uint64(l))
+	}
+	if m.Price != 0 {
+		n += 1 + sovPacket(uint64(m.Price))
+	}
+	return n
+}
+
+func (m *SellOrderPacketAck) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.RemainingAmount != 0 {
+		n += 1 + sovPacket(uint64(m.RemainingAmount))
+	}
+	if m.Gain != 0 {
+		n += 1 + sovPacket(uint64(m.Gain))
+	}
 	return n
 }
 
@@ -607,6 +901,41 @@ func (m *DexPacketData) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			m.Packet = &DexPacketData_CreatePairPacket{v}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SellOrderPacket", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPacket
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthPacket
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthPacket
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			v := &SellOrderPacketData{}
+			if err := v.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			m.Packet = &DexPacketData_SellOrderPacket{v}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -822,6 +1151,246 @@ func (m *CreatePairPacketAck) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: CreatePairPacketAck: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipPacket(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthPacket
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *SellOrderPacketData) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowPacket
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: SellOrderPacketData: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: SellOrderPacketData: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AmountDenom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPacket
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPacket
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPacket
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AmountDenom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
+			}
+			m.Amount = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPacket
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Amount |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PriceDenom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPacket
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPacket
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPacket
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.PriceDenom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Price", wireType)
+			}
+			m.Price = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPacket
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Price |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipPacket(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthPacket
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *SellOrderPacketAck) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowPacket
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: SellOrderPacketAck: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: SellOrderPacketAck: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RemainingAmount", wireType)
+			}
+			m.RemainingAmount = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPacket
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.RemainingAmount |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Gain", wireType)
+			}
+			m.Gain = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPacket
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Gain |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipPacket(dAtA[iNdEx:])
